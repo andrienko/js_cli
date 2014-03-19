@@ -9,12 +9,12 @@ Oh, it's not even started yet.
 Plans for future
 ===
 
- - colorized output
  - parameter parsing
- - extension of the TheCLI.commands object with your own commands.
+ - colorized output
  - command history
- - stripping tags
  - blinking cursor
  - cursor character highlighting
  - PgUp/PgDn
  - Unix-like mode (console inside content)
+ - make special keys work perfectly
+ - copypaste using clippy

@@ -1,8 +1,15 @@
+String.prototype.stripTags = function(doornot){
+    if(doornot!=true)return this.replace(/</g,'&lt;');
+    return this;
+}
+
 TheCLI = {
     parent:null,
 
     output:null,
     input:null,
+
+    tagsAllowed:false,
 
     commandline:'',
     commandline_history:[],
@@ -10,18 +17,26 @@ TheCLI = {
     prepend : 'anonymous@test:~$ ',
 
     actionKeyPress:function(event){
-        var keyCode = event.which || event.keyCode;
+        var keyCode = event.which;
 
-        if(((keyCode >= 0x20) && (keyCode < 0x99)) || keyCode > 0xFF )this.commandline += String.fromCharCode(keyCode);
+        if(navigator.appName.indexOf("Microsoft")!=-1)keyCode = event.keyCode;
+
+        if(event.keyCode >= 113 && event.keyCode<=123)return event;
+
+
+        if(((keyCode >= 0x20) && (keyCode < 0x99)) || keyCode > 0xFF )this.commandline += this.fromChar(keyCode);
 
         else if(keyCode == 8){
             this.commandline = this.commandline.substring(0,this.commandline.length - 1);
         }
         else if(keyCode == 13){
             this.commandline_history.push(this.commandline);
-            this.write(this.prepend+this.commandline);
+            this.write(this.prepend+this.commandline.stripTags(this.tagsAllowed));
             this.actionCommand(this.commandline);
             this.commandline = '';
+        }
+        else if(event.keyCode == 9){
+            //this.commandline = "dont press tab, mortal!";
         }
 
         this.renderCommandLine();
@@ -42,13 +57,12 @@ TheCLI = {
     clear:function(){this.output.innerHTML='';return this;},
 
     actionHardKeyPress:function (event){
-        var keyCode = event.which || event.keyCode;
-        if([116, 123].indexOf(keyCode) != -1)return event;
         if(event.keyCode == 8)return this.actionKeyPress(event); // IE fix
         return event;
     },
 
     actionCommand:function(text){
+        if(text=='')return;
         if(typeof this.commands[text] != 'undefined'){
             try{
                 this.commands[text]();
@@ -58,7 +72,7 @@ TheCLI = {
             }
         }
         else{
-            this.write('Unrecognized command');
+            this.write(text.stripTags(this.tagsAllowed)+': command not found');
         }
     },
 
@@ -67,8 +81,12 @@ TheCLI = {
         cls:function(){TheCLI.clear();}
     },
 
+    fromChar:function(code){
+        return String.fromCharCode(code);
+    },
+
     renderCommandLine:function(){
-        this.input.innerHTML = this.prepend+this.commandline+'|';
+        this.input.innerHTML = this.prepend+this.commandline.stripTags()+'<span class="caret"> </span>';
     },
 
     init : function(objectID){
@@ -100,6 +118,8 @@ TheCLI = {
         this.output = output;
         this.input = input;
 
+        parent.onfocus=function(e){e.blur();};
+
         this.renderCommandLine();
 
         return true;
@@ -114,6 +134,5 @@ document.onkeypress = function(event){
     return TheCLI.actionKeyPress(event);
 }
 document.onkeydown = function(event){
-    //if (!event)event = window.event;
     return TheCLI.actionHardKeyPress(event);
 }

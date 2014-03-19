@@ -5,3 +5,11 @@ TheCLI.extend('help',function(text){
     }
     TheCLI.nl();
 });
+
+TheCLI.extend('barn',function(text){
+    TheCLI.write('\n<span style="color:#0f0">           x\n.-. _______|\n|=|/     /  \\\n| |_____|_""_|\n|_|_[X]_|____|\n</span>');
+});
+
+
+
+
