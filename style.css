@@ -1,0 +1,35 @@
+body,html{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+#cli_instance{
+    background-color: #000;
+    margin: 0;
+    padding: 0;
+    color: #CCC;
+    font: normal 16px 'Courier New', monospace;
+    /*width: 46.7em;
+    height: 24em;*/
+    width: 100%;
+    height: 100%;
+    border: none;
+
+    white-space: pre-wrap;
+    word-break:break-all;
+
+    line-height: 1em;
+    overflow: hidden;
+    position: relative;
+}
+#cli_instance .output{
+    position: absolute;
+    max-width: 100%;
+    min-height: 100%;
+    top:1em;
+    bottom: 1.5em;
+}
+#cli_instance .input{
+    position: absolute;
+    bottom:0.5em;
+}
