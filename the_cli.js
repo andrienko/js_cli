@@ -3,6 +3,11 @@ String.prototype.stripTags = function(doornot){
     return this;
 }
 
+if(String.prototype.trim == 'undefined')
+    String.prototype.trim = function(){
+        return this.replace(/^\s+|\s+$/g,'');
+    };
+
 TheCLI = {
     parent:null,
 
@@ -69,10 +74,13 @@ TheCLI = {
     },
 
     actionCommand:function(text){
+        text=text.trim();
         if(text=='')return;
-        if(typeof this.commands[text] != 'undefined'){
+
+        text = this.parseCommand(text);
+        if(typeof this.commands[text.command] != 'undefined'){
             try{
-                this.commands[text]();
+                this.commands[text.command](text);
             }
             catch(e){
                 this.write('An error uccured: '+ e.message);
@@ -86,6 +94,20 @@ TheCLI = {
     commands:{
         clear:function(){TheCLI.clear();},
         cls:function(){TheCLI.clear();}
+    },
+
+    parseCommand:function(text){
+
+        var parameters = text.split(/\s+|\s*=\s*/);
+        var command = parameters[0];
+
+        return {
+            text : text,
+            command : command,
+            parameters : parameters,
+            parametersText : text.substr(command.length).trim()
+        }
+
     },
 
     fromChar:function(code){
