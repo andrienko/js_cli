@@ -36,7 +36,14 @@ TheCLI = {
             this.commandline = '';
         }
         else if(event.keyCode == 9){
-            //this.commandline = "dont press tab, mortal!";
+            var acc = [];
+            for(var com in this.commands)
+                if(com.indexOf(this.commandline)==0)
+                    acc.push(com);
+
+            if(acc.length==1)this.commandline=acc[0];
+            else if(acc.length<=0)return;
+            else this.write(acc.join(' '));
         }
 
         this.renderCommandLine();

@@ -18,3 +18,4 @@ Plans for future
  - Unix-like mode (console inside content)
  - make special keys work perfectly
  - copypaste using clippy
+ - extended suggests (c will become cl if there are clear and cls)
