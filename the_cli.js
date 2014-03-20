@@ -27,6 +27,9 @@ TheCLI = {
     commandline:'',
     commandline_history:[],
 
+    caret_pos:-1,
+    commandline_prepend : 'С:\\> ',
+
     actionKeyPress:function(event){
         var keyCode = event.which;
         if(navigator.appName.indexOf("Microsoft")!=-1)keyCode = event.keyCode;
@@ -105,7 +108,7 @@ TheCLI = {
     },
 
     motd:function(){
-        this.write('<a href="https://github.com/andrienko/js_cli">The CLI</a> [version 1.0.1000]')
+        this.write('<a href="https://github.com/andrienko/js_cli">The CLI [version 1.0.1000]</a>')
             .write('(с) Andrienko, 2014 (released under <a href="http://opensource.org/licenses/MIT">MIT</a>)')
             .nl()
             .write(document.location.href)
@@ -133,9 +136,6 @@ TheCLI = {
         }
 
     },
-
-    caret_pos:-1,
-    commandline_prepend : 'test:/> ',
 
     caret_back : function(){
         if(this.caret_pos<0)this.caret_pos = this.commandline.length;
