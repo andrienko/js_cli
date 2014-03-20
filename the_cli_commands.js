@@ -13,6 +13,11 @@ TheCLI.extend('barn',function(){
 TheCLI.extend('test',function(text){
     TheCLI.nl().write(JSON.stringify(text)).nl();
     console.log(text);
+});
+
+TheCLI.extend('eval',function(text){
+    TheCLI.nl().write('evaluating ' + text.parametersText).nl();
+    eval(text.parametersText);
 
 });
 
