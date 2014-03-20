@@ -16,7 +16,7 @@ TheCLI = {
 
     tagsAllowed:false,
 
-    commandline:'',
+    commandline:'the test',
     commandline_history:[],
     that: null,
     prepend : 'anonymous@test:~$ ',
@@ -92,8 +92,13 @@ TheCLI = {
     },
 
     motd:function(){
-        this.write('Hello and welcome to the command line interpreter!');
-        this.write('Type <b>help</b>  to get list of command available');
+        this.write('<a href="https://github.com/andrienko/js_cli">The CLI</a> [version 1.0.1000]')
+            .write('(с) Andrienko, 2014 (released under <a href="http://opensource.org/licenses/MIT">MIT</a>)')
+            .nl()
+            .write(document.location.href)
+            .nl()
+            .write('Hello and welcome to the command line interpreter!')
+            .write('Type <b>help</b> to get list of commands available');
 
     },
 
@@ -116,12 +121,17 @@ TheCLI = {
 
     },
 
+    caret:{
+        post:3,
+        content : ' '
+    },
+
     fromChar:function(code){
         return String.fromCharCode(code);
     },
 
     renderCommandLine:function(){
-        this.input.innerHTML = this.prepend+this.commandline.stripTags()+'<span class="caret"> </span>';
+        this.input.innerHTML = this.prepend+this.commandline.stripTags()+'<span class="caret">'+this.caret.content+'</span>';
     },
 
     init : function(objectID){
