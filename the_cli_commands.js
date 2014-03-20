@@ -15,6 +15,10 @@ TheCLI.extend('test',function(text){
     console.log(text);
 });
 
+TheCLI.extend('echo',function(text){
+    TheCLI.write(text.parametersText);
+});
+
 TheCLI.extend('eval',function(text){
     TheCLI.nl().write('evaluating ' + text.parametersText).nl();
     eval(text.parametersText);
