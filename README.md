@@ -13,13 +13,13 @@ See the index.html file. To initialize TheCLI the single line of code is require
 
 Where cli_instance is an ID of an element that the cli will run in.
 
-## output a line
+### output a line
 
 This will output a line of text into console:
 
     TheCLI.write('text');
 
-## add own command
+### add own command
 
     TheCLI.extend('hello',function(data,cli){
         var person = data.parametersText == ''?'world':data.parametersText;
@@ -35,10 +35,10 @@ need to call the cli this function is extending.
 
 The data user inputted has 4 fields:
 
-    - data.text is the full text of what user inputted
-    - data.commandText is everything user inputted except the command being called
-    - data.command is the command being called
-    - data.parameters is an array of every word user inputted, separated by spaces and = sign.
+ - data.text is the full text of what user inputted
+ - data.commandText is everything user inputted except the command being called
+ - data.command is the command being called
+ - data.parameters is an array of every word user inputted, separated by spaces and = sign.
 
 Running multiple instances on same page
 ---
@@ -56,6 +56,7 @@ So, it may be pretty tough, but actually nothing special.
 Plans for future
 ---
 
+ - make it work everywhere (now works only in FF)
  - colorized output
  - command history
  - blinking cursor
