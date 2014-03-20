@@ -11,8 +11,8 @@ TheCLI.extend('barn',function(data,cli){
 });
 
 TheCLI.extend('test',function(data,cli){
-    cli.nl().write(JSON.stringify(text)).nl();
-    console.log(text);
+    cli.nl().write(JSON.stringify(data)).nl();
+    console.log(data);
 });
 
 TheCLI.extend('echo',function(data,cli){
