@@ -24,44 +24,47 @@ TheCLI = {
     tagsAllowed:false,
     caseSensitiveCommands:false,
 
-    commandline:'the test',
+    commandline:'',
     commandline_history:[],
-    that: null,
 
     actionKeyPress:function(event){
-
-        //console.log(event.keyCode, event.which);
-
         var keyCode = event.which;
         if(navigator.appName.indexOf("Microsoft")!=-1)keyCode = event.keyCode;
 
-        //if(event.keyCode >= 113 && event.keyCode<=123)return event;
-
-        if(((keyCode >= 0x20) && (keyCode < 0x99)) || keyCode > 0xFF )this.commandline += this.fromChar(keyCode);
-
-        else if(keyCode == 8){
-            this.commandline = this.commandline.substring(0,this.commandline.length - 1);
-        }
-        else if(keyCode == 13){
-            this.commandline_history.push(this.commandline);
-            this.write(this.caret.prepend+this.commandline.stripTags(this.tagsAllowed));
-            this.actionCommand(this.commandline);
-            this.commandline = '';
-        }
-        else if(event.keyCode == 9){
-            if(this.commandline.trim()!='')this.suggest()
+        if(((keyCode >= 0x20) && (keyCode < 0x99)) || keyCode > 0xFF ){
+            this.enterChar(String.fromCharCode(keyCode));
+            this.renderCommandLine();
         }
 
-        this.renderCommandLine();
         event.preventDefault();
         return false;
     },
 
     actionHardKeyPress:function (event){
-        if([8,9].indexOf(event.keyCode) != -1) return this.actionKeyPress(event);
+        //console.log(event.keyCode);
+        if(event.keyCode == 8)this.erase();
+        else if(event.keyCode == 35)this.caret_end();
+        else if(event.keyCode == 36)this.caret_home();
+        else if(event.keyCode == 46)this.del();
+        else if(event.keyCode == 9)this.suggest();
+        else if(event.keyCode == 13)this.enter();
+        else if(event.keyCode == 37)this.caret_back();
+        else if(event.keyCode == 39)this.caret_next();
+
+        this.renderCommandLine();
+
+        if([8,9,13].indexOf(event.keyCode) != -1)return false;  // Preventing backspace from happening
+    },
+
+    enter:function(){
+        this.commandline_history.push(this.commandline);
+        this.write(this.commandline_prepend+this.commandline.stripTags(this.tagsAllowed));
+        this.actionCommand(this.commandline);
+        this.commandline = '';
     },
 
     suggest:function(){
+        if(this.commandline.trim()=='')return;
         var acc = [];
         for(var com in this.commands)
             if(com.indexOf(this.commandline)==0)
@@ -131,18 +134,56 @@ TheCLI = {
 
     },
 
-    caret:{
-        post:3,
-        prepend : 'test:/>',
-        content : ' '
+    caret_pos:-1,
+    commandline_prepend : 'test:/> ',
+
+    caret_back : function(){
+        if(this.caret_pos<0)this.caret_pos = this.commandline.length;
+        if(this.caret_pos>0)this.caret_pos --;
+    },
+    caret_next : function(){
+        if(this.caret_pos<=this.commandline.length && this.caret_pos>=0)this.caret_pos++;
+        if(this.caret_pos>=this.commandline.length)this.caret_pos=-1;
+
+    },
+    caret_end : function(){
+        this.caret_pos = -1;
+    },
+    caret_home : function(){
+        this.caret_pos = 0;
     },
 
-    fromChar:function(code){
-        return String.fromCharCode(code);
+    enterChar:function(char){
+        if(this.caret_pos!=-1){
+            this.commandline = this.commandline.substr(0,this.caret_pos) + char + this.commandline.substr(this.caret_pos);
+            this.caret_next();
+        }
+        else this.commandline+=char;
+    },
+
+    erase:function(){
+        if(this.caret_pos!=-1){
+            this.commandline = this.commandline.substr(0,this.caret_pos-1)+this.commandline.substr(this.caret_pos);
+            this.caret_back();
+        }
+        else this.commandline = this.commandline.substring(0,this.commandline.length - 1);
+    },
+
+    del:function(){
+        if(this.caret_pos!=-1){
+            this.commandline = this.commandline.substr(0,this.caret_pos)+this.commandline.substr(this.caret_pos+1);
+            if(this.caret_pos>=this.commandline.length)this.caret_pos=-1;
+        }
     },
 
     renderCommandLine:function(){
-        this.input.innerHTML = this.caret.prepend+this.commandline.stripTags()+'<span class="caret">'+this.caret.content+'</span>';
+        if(this.caret_pos == -1 || this.commandline.trim()=='')this.input.innerHTML = this.commandline_prepend+this.commandline.stripTags()+'<span class="caret"> </span>';
+        else{
+            var before = this.commandline.substr(0,this.caret_pos).stripTags();
+            var curr = this.commandline.substr(this.caret_pos,1).stripTags();
+            var after = this.commandline.substr(this.caret_pos+1).stripTags();
+            this.input.innerHTML = this.commandline_prepend+before+'<span class="caret">'+curr+'</span>'+after;
+        }
     },
 
     init : function(objectID){

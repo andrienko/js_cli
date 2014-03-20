@@ -9,7 +9,7 @@ Yeah, I know, there were a plenty of them, but this one is mine.
 
 Also, the goal of whole thing is to learn how to work with keys. Nothing more.
 
-Usage
+Usage (programmatical)
 ---
 
 ### init
@@ -67,7 +67,6 @@ So, it may be pretty tough, but actually nothing special.
 Plans for future
 ---
 
- - cursor movement
  - command history
  - blinking cursor
  - colorized output
@@ -79,3 +78,4 @@ Plans for future
  - extended suggests (c will become cl if there are clear and cls)
  - fake file system
  - add allowed keys handeling (F-keys etc)
+ - locks (for input into a function, etc)
