@@ -1,6 +1,14 @@
+**Warning! The thing is now pretty useless since I'm sloppy and it currently works propertly only in FF**
+---
+
 CLI interpreter
 ===
-Yes, I know, there were a plenty of them, but this one is mine. I believe in it.
+
+This one is a fake command-line written in JS.
+
+![Screenshot](http://i.imgur.com/UJuIrgb.png)
+
+Yeah, I know, there were a plenty of them, but this one is mine.
 
 Usage
 ---
