@@ -91,6 +91,12 @@ TheCLI = {
         }
     },
 
+    motd:function(){
+        this.write('Hello and welcome to the command line interpreter!');
+        this.write('Type <b>help</b>  to get list of command available');
+
+    },
+
     commands:{
         clear:function(){TheCLI.clear();},
         cls:function(){TheCLI.clear();}
@@ -151,6 +157,7 @@ TheCLI = {
 
         this.renderCommandLine();
 
+        this.motd();
         return true;
     },
 
