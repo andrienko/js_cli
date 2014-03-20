@@ -73,21 +73,21 @@ TheCLI = {
         return event;
     },
 
-    actionCommand:function(text){
-        text=text.trim();
-        if(text=='')return;
+    actionCommand:function(commandline){
+        commandline=commandline.trim();
+        if(commandline=='')return;
 
-        text = this.parseCommand(text);
-        if(typeof this.commands[text.command] != 'undefined'){
+        commandline = this.parseCommand(commandline);
+        if(typeof this.commands[commandline.command] != 'undefined'){
             try{
-                this.commands[text.command](text);
+                this.commands[commandline.command](commandline,this);
             }
             catch(e){
                 this.write('An error uccured: '+ e.message);
             }
         }
         else{
-            this.write(text.stripTags(this.tagsAllowed)+': command not found');
+            this.write(commandline.stripTags(this.tagsAllowed)+': command not found');
         }
     },
 
@@ -103,8 +103,8 @@ TheCLI = {
     },
 
     commands:{
-        clear:function(){TheCLI.clear();},
-        cls:function(){TheCLI.clear();}
+        clear:function(data,cli){cli.clear();},
+        cls:function(data,cli){cli.clear();}
     },
 
     parseCommand:function(text){
