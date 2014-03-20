@@ -3,7 +3,7 @@ CLI interpreter
 
 This one is a fake command-line written in JS.
 
-![Screenshot](http://i.imgur.com/UJuIrgb.png)
+![Screenshot](http://raw.githubusercontent.com/andrienko/js_cli/master/screenshot.png)
 
 Yeah, I know, there were a plenty of them, but this one is mine.
 
