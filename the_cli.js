@@ -19,7 +19,6 @@ TheCLI = {
     commandline:'the test',
     commandline_history:[],
     that: null,
-    prepend : 'anonymous@test:~$ ',
 
     actionKeyPress:function(event){
 
@@ -37,18 +36,12 @@ TheCLI = {
         }
         else if(keyCode == 13){
             this.commandline_history.push(this.commandline);
-            this.write(this.prepend+this.commandline.stripTags(this.tagsAllowed));
+            this.write(this.caret.prepend+this.commandline.stripTags(this.tagsAllowed));
             this.actionCommand(this.commandline);
             this.commandline = '';
         }
         else if(event.keyCode == 9){
-            var acc = [];
-            for(var com in this.commands)
-                if(com.indexOf(this.commandline)==0)
-                    acc.push(com);
-            if(acc.length==1)this.commandline=acc[0];
-            else if(acc.length<=0)return;
-            else this.write(acc.join(' '));
+            if(this.commandline.trim()!='')this.suggest()
         }
 
         this.renderCommandLine();
@@ -57,11 +50,17 @@ TheCLI = {
     },
 
     actionHardKeyPress:function (event){
-        switch(event.keyCode){
-            case 8:   return this.actionKeyPress(event);
-            case 38:  return this.actionKeyPress(event);
-            case 40:  return this.actionKeyPress(event);
-        }
+        if([8,9].indexOf(event.keyCode) != -1) return this.actionKeyPress(event);
+    },
+
+    suggest:function(){
+        var acc = [];
+        for(var com in this.commands)
+            if(com.indexOf(this.commandline)==0)
+                acc.push(com);
+        if(acc.length==1)this.commandline=acc[0];
+        else if(acc.length<=0)return;
+        else this.write(acc.join(' '));
     },
 
     write:function(text,noBreak){
@@ -75,8 +74,6 @@ TheCLI = {
     nl:function(){return this.write('');},
 
     clear:function(){this.output.innerHTML='';return this;},
-
-
 
     actionCommand:function(commandline){
         commandline=commandline.trim();
@@ -128,6 +125,7 @@ TheCLI = {
 
     caret:{
         post:3,
+        prepend : 'test:/>',
         content : ' '
     },
 
@@ -136,7 +134,7 @@ TheCLI = {
     },
 
     renderCommandLine:function(){
-        this.input.innerHTML = this.prepend+this.commandline.stripTags()+'<span class="caret">'+this.caret.content+'</span>';
+        this.input.innerHTML = this.caret.prepend+this.commandline.stripTags()+'<span class="caret">'+this.caret.content+'</span>';
     },
 
     init : function(objectID){
