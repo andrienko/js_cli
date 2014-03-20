@@ -7,6 +7,8 @@ This one is a fake command-line written in JS.
 
 Yeah, I know, there were a plenty of them, but this one is mine.
 
+Also, the goal of whole thing is to learn how to work with keys. Nothing more.
+
 Usage
 ---
 
