@@ -23,5 +23,3 @@ TheCLI.extend('eval',function(data){
     cli.nl().write('evaluating ' + data.parametersText).nl();
     eval(text.parametersText);
 });
-
-
