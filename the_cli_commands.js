@@ -23,3 +23,8 @@ TheCLI.extend('eval',function(data,cli){
     cli.nl().write('evaluating ' + data.parametersText).nl();
     eval(data.parametersText);
 });
+
+TheCLI.extend('reset',function(data,cli){
+    cli.clear();
+    cli.init(cli.parent.id);
+});
