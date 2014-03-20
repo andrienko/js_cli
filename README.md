@@ -26,19 +26,19 @@ This will output a line of text into console:
 
     TheCLI.write('text');
 
-### add own command
+### adding own command
 
     TheCLI.extend('hello',function(data,cli){
         var person = data.parametersText == ''?'world':data.parametersText;
         cli.write('Hello, '+person+'!');
     });
 
-Call the extend TheCLI.extension and pass it two parameters: the name of the command and the callback function
+Call the TheCLI.extension and pass it two parameters: the name of the command and the callback function
 the name of the command should contain no space symbols. Just in case.
 
-The callback function recieves two parameters - the object which contains the data user inputted and the cli object
-which contains reference to TheCLI. The second parameter is there for sake of extendability so please use it if you
-need to call the cli this function is extending.
+The callback function recieves two parameters.
+
+First one is the the object which contains the data user inputted and
 
 The data user inputted has 4 fields:
 
@@ -46,6 +46,10 @@ The data user inputted has 4 fields:
  - data.commandText is everything user inputted except the command being called
  - data.command is the command being called
  - data.parameters is an array of every word user inputted, separated by spaces and = sign.
+
+The second parameter is the cli object which contains reference to current TheCLI.
+It is there for sake of extendability so please use it if you need to call the cli from your function (for example,
+to output something to the cli)
 
 Running multiple instances on same page
 ---
@@ -63,14 +67,13 @@ So, it may be pretty tough, but actually nothing special.
 Plans for future
 ---
 
- - colorized output
+ - cursor movement
  - command history
  - blinking cursor
- - cursor character highlighting
+ - colorized output
  - PgUp/PgDn
  - parameter parsing (add ="value" and --parameter, -parameter, /parameter), non-breaking "not breaked"
- - Unix-like mode (console inside content)
- - make special keys work perfectly
+ - Console inside content mode
  - copypaste using clippy
  - extended suggests (c will become cl if there are clear and cls)
  - fake file system

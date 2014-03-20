@@ -100,8 +100,8 @@ TheCLI = {
             .write(document.location.href)
             .nl()
             .write('Hello and welcome to the command line interpreter!')
-            .write('Type <b>help</b> to get list of commands available');
-
+            .write('Type <b>help</b> to get list of commands available')
+            .nl();
     },
 
     commands:{
