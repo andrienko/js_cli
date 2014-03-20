@@ -1,5 +1,5 @@
 TheCLI.extend('help',function(data,cli){
-    cli.nl().write('  Well, hello. I am the CLI. And You have following options:').nl();
+    cli.nl().write('Following commands are available:').nl();
     for(var command in cli.commands){
         cli.write('  - '+command);
     }
@@ -19,7 +19,7 @@ TheCLI.extend('echo',function(data,cli){
     cli.write(data.parametersText);
 });
 
-TheCLI.extend('eval',function(data){
+TheCLI.extend('eval',function(data,cli){
     cli.nl().write('evaluating ' + data.parametersText).nl();
-    eval(text.parametersText);
+    eval(data.parametersText);
 });
