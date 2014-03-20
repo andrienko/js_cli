@@ -28,7 +28,7 @@ TheCLI = {
     commandline_history:[],
 
     caret_pos:-1,
-    commandline_prepend : 'С:\\> ',
+    commandline_prepend : 'С:\\>',
 
     actionKeyPress:function(event){
         var keyCode = event.which;
