@@ -1,6 +1,3 @@
-**Warning! The thing is now pretty useless since I'm sloppy and it currently works propertly only in FF**
----
-
 CLI interpreter
 ===
 
@@ -64,7 +61,6 @@ So, it may be pretty tough, but actually nothing special.
 Plans for future
 ---
 
- - make it work everywhere (now works only in FF)
  - colorized output
  - command history
  - blinking cursor
@@ -76,3 +72,4 @@ Plans for future
  - copypaste using clippy
  - extended suggests (c will become cl if there are clear and cls)
  - fake file system
+ - add allowed keys handeling (F-keys etc)

@@ -22,12 +22,13 @@ TheCLI = {
     prepend : 'anonymous@test:~$ ',
 
     actionKeyPress:function(event){
-        var keyCode = event.which;
 
+        //console.log(event.keyCode, event.which);
+
+        var keyCode = event.which;
         if(navigator.appName.indexOf("Microsoft")!=-1)keyCode = event.keyCode;
 
-        if(event.keyCode >= 113 && event.keyCode<=123)return event;
-
+        //if(event.keyCode >= 113 && event.keyCode<=123)return event;
 
         if(((keyCode >= 0x20) && (keyCode < 0x99)) || keyCode > 0xFF )this.commandline += this.fromChar(keyCode);
 
@@ -45,7 +46,6 @@ TheCLI = {
             for(var com in this.commands)
                 if(com.indexOf(this.commandline)==0)
                     acc.push(com);
-
             if(acc.length==1)this.commandline=acc[0];
             else if(acc.length<=0)return;
             else this.write(acc.join(' '));
@@ -54,6 +54,14 @@ TheCLI = {
         this.renderCommandLine();
         event.preventDefault();
         return false;
+    },
+
+    actionHardKeyPress:function (event){
+        switch(event.keyCode){
+            case 8:   return this.actionKeyPress(event);
+            case 38:  return this.actionKeyPress(event);
+            case 40:  return this.actionKeyPress(event);
+        }
     },
 
     write:function(text,noBreak){
@@ -68,10 +76,7 @@ TheCLI = {
 
     clear:function(){this.output.innerHTML='';return this;},
 
-    actionHardKeyPress:function (event){
-        if(event.keyCode == 8)return this.actionKeyPress(event); // IE fix
-        return event;
-    },
+
 
     actionCommand:function(commandline){
         commandline=commandline.trim();
@@ -87,7 +92,7 @@ TheCLI = {
             }
         }
         else{
-            this.write(commandline.stripTags(this.tagsAllowed)+': command not found');
+            this.write(commandline.command.stripTags(this.tagsAllowed)+': command not found');
         }
     },
 
