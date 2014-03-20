@@ -33,7 +33,7 @@ This will output a line of text into console:
         cli.write('Hello, '+person+'!');
     });
 
-Call the TheCLI.extension and pass it two parameters: the name of the command and the callback function
+Call the TheCLI.extend and pass it two parameters: the name of the command and the callback function
 the name of the command should contain no space symbols. Just in case.
 
 The callback function recieves two parameters.
@@ -71,6 +71,7 @@ Plans for future
  - command history
  - blinking cursor
  - colorized output
+ - unknown command processing functions
  - PgUp/PgDn
  - parameter parsing (add ="value" and --parameter, -parameter, /parameter), non-breaking "not breaked"
  - Console inside content mode

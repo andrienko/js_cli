@@ -3,10 +3,17 @@ String.prototype.stripTags = function(doornot){
     return this;
 }
 
+String.prototype.toLower = function(doornot){
+    if(doornot!=true)return this.toLowerCase();
+    return this;
+}
+
 if(String.prototype.trim == 'undefined')
     String.prototype.trim = function(){
         return this.replace(/^\s+|\s+$/g,'');
     };
+
+
 
 TheCLI = {
     parent:null,
@@ -15,6 +22,7 @@ TheCLI = {
     input:null,
 
     tagsAllowed:false,
+    caseSensitiveCommands:false,
 
     commandline:'the test',
     commandline_history:[],
@@ -85,7 +93,7 @@ TheCLI = {
                 this.commands[commandline.command](commandline,this);
             }
             catch(e){
-                this.write('An error uccured: '+ e.message);
+                this.write(commandline.command.stripTags(this.tagsAllowed)+': an error uccured\n\n'+ e.message).nl();
             }
         }
         else{
@@ -112,7 +120,7 @@ TheCLI = {
     parseCommand:function(text){
 
         var parameters = text.split(/\s+|\s*=\s*/);
-        var command = parameters[0];
+        var command = parameters[0].toLower(this.caseSensitiveCommands);
 
         return {
             text : text,
@@ -175,7 +183,7 @@ TheCLI = {
     },
 
     extend:function(name,callback){
-        this.commands[name] = callback;
+        this.commands[name.toLower(this.caseSensitiveCommands)] = callback;
     }
 };
 

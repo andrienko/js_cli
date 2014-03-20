@@ -28,3 +28,7 @@ TheCLI.extend('reset',function(data,cli){
     cli.clear();
     cli.init(cli.parent.id);
 });
+
+TheCLI.extend('command_with_error',function(data){
+    the_undefined_function();
+});
