@@ -77,7 +77,8 @@ TheCLI = {
     },
 
     history_prev: function() {
-        this.commandline = this.commandline_history[this.commandline_history.length - 1];
+        var prev = this.commandline_history[this.commandline_history.length - 1];
+        if(typeof prev != 'undefined')this.commandline = this.commandline_history[this.commandline_history.length - 1];
 
     },
 
