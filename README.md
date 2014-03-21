@@ -85,6 +85,7 @@ Plans for future
  - blinking cursor
  - colorized output
  - unknown command processing functions
+ - suggest functions
  - PgUp/PgDn
  - parameter parsing (add ="value" and --parameter, -parameter, /parameter), non-breaking "not breaked"
  - Console inside content mode
