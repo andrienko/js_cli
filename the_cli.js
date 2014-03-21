@@ -13,6 +13,10 @@ if(String.prototype.trim == 'undefined')
         return this.replace(/^\s+|\s+$/g,'');
     };
 
+String.prototype.repeat= function(n){
+    return Array((n || 1)+1).join(this);
+}
+
 TheCLI = {
 
     parent:null,
@@ -236,6 +240,16 @@ TheCLI = {
         this.renderCommandLine();
 
         this.motd();
+
+        var that = this;
+
+        document.onkeypress = function(event){
+            return that.actionKeyPress(event);
+        }
+        document.onkeydown = function(event){
+            return that.actionHardKeyPress(event);
+        }
+
         return true;
     },
 
@@ -252,10 +266,3 @@ TheCLI = {
         this.commands[name.toLower(this.caseSensitiveCommands)] = callback;
     }
 };
-
-document.onkeypress = function(event){
-    return TheCLI.actionKeyPress(event);
-}
-document.onkeydown = function(event){
-    return TheCLI.actionHardKeyPress(event);
-}
