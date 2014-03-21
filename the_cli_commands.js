@@ -22,6 +22,8 @@ the_cli.extend('motd',function(data,cli){
     cli.nl();
     var dim = cli.calculateDim();
 
+    var pipes = ' ║'+' '.repeat(dim-4)+'║ ';
+
     var write_c = function(string,pipe){
         if(typeof pipe == 'undefined')pipe = '║';
         var off = Math.floor((dim - string.replace(/(<([^>]+)>)/ig,"").length)/2);
@@ -29,22 +31,22 @@ the_cli.extend('motd',function(data,cli){
     }
 
     cli.write(' ╔'+'═'.repeat(dim-4)+'╗ ').
-        write(' ║'+' '.repeat(dim-4)+'║ ');
+        write(pipes);
 
     write_c('Hello.');
 
-    cli.write(' ║'+' '.repeat(dim-4)+'║ ');
+    cli.write(pipes);
 
     write_c('I am the fake command-line interpreter,');
     write_c('written in JavaScript.');
-    cli.write(' ║'+' '.repeat(dim-4)+'║ ');
+    cli.write(pipes);
     write_c('Type <b>help</b> for list of commands.');
-    cli.write(' ║'+' '.repeat(dim-4)+'║ ').
+    cli.write(pipes).
         write(' ╟'+'─'.repeat(dim-4)+'╢ ').
-        write(' ║'+' '.repeat(dim-4)+'║ ');
+        write(pipes);
     write_c('(c) Andrienko, 2014. Released under <a href="http://opensource.org/licenses/MIT">MIT</a>.');
 
-    cli.write(' ║'+' '.repeat(dim-4)+'║ ').
+    cli.write(pipes).
         write(' ╚'+'═'.repeat(dim-4)+'╝ ').nl();
     write_c('The <a href="https://github.com/andrienko/js_cli">GitHub repository</a> is there for you to hack ;-)',' ');
 });
