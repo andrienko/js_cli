@@ -1,11 +1,13 @@
 var the_cli = TheCLI;
 
 
+the_cli.hiddenCommands = ['cls','motd','barn','test','reset','command_with_error','centered'];
+
 the_cli.extend('help',function(data,cli){
-    var hiddenCommands = ['cls','motd','barn','test','reset','command_with_error'];
+
     cli.nl().write('Following commands are available:').nl();
     for(var command in cli.commands){
-        if(hiddenCommands.indexOf(command)==-1) cli.write('  - '+command);
+        if(cli.hiddenCommands.indexOf(command)==-1) cli.write('  - '+command);
     }
     cli.nl();
 });
@@ -40,7 +42,7 @@ the_cli.extend('command_with_error',function(){
 
 the_cli.extend('line',function(data,cli){
     cli.write('-'.repeat(cli.calculateDim()));
-})
+});
 
 the_cli.extend('centered',function(data,cli){
     var dim = cli.calculateDim();
@@ -51,4 +53,4 @@ the_cli.extend('centered',function(data,cli){
         return;
     }
     else cli.write(' '.repeat((dim - text.length)/2)+text);
-})
+});

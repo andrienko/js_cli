@@ -48,6 +48,8 @@ TheCLI = {
 
         event.preventDefault();
         return false;
+
+
     },
 
     keyDown: function(event) {
@@ -64,16 +66,6 @@ TheCLI = {
         else if(event.keyCode == 39)this.caret_next();
         else if(event.keyCode == 38)this.history_prev();
         else if(event.keyCode == 40)this.history_next();
-        else if(event.keyCode == 17)this.ctrlIsDown = true;
-
-        if(event.keyCode >= 112 && event.keyCode <= 123) {
-            return event;
-        }
-
-        if(this.ctrlIsDown && event.keyCode == 86){
-            this.paste();
-            return false;
-        }
 
         this.renderCommandLine();
 
@@ -81,12 +73,10 @@ TheCLI = {
     },
 
     keyUp: function(event) {
-        if(event.keyCode == 17)this.ctrlIsDown = false;
-    },
-
-    paste: function(){
-        this.commandline = 'zephyr!';
-        this.renderCommandLine();
+        if(event.keyCode == 17){
+            this.parent.removeChild(this.textbox);
+            this.textbox=null;
+        }
     },
 
     history_next: function() {
@@ -288,10 +278,11 @@ TheCLI = {
 
     calculateDim: function() {
         var tempSpan = document.createElement('span');
-        tempSpan.innerHTML = "x";
-        this.parent.appendChild(tempSpan);
-        var dimX = tempSpan.offsetWidth;
-        this.parent.removeChild(tempSpan);
+        tempSpan.innerHTML = "M".repeat(20);    // Black magic
+        this.output.appendChild(tempSpan);
+
+        var dimX = tempSpan.offsetWidth / 20;
+        this.output.removeChild(tempSpan);
         return Math.floor(this.parent.offsetWidth / dimX);
     },
 

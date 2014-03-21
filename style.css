@@ -1,9 +1,14 @@
 /*@import url('http://fonts.googleapis.com/css?family=Press+Start+2P&subset=latin,cyrillic');*/
 
+*{
+    margin: 0;
+    padding: 0;
+}
 body,html{
     margin: 0;
     padding: 0;
     height: 100%;
+    line-height: 1.25;
 }
 #cli_instance{
     -webkit-touch-callout: none;
@@ -17,18 +22,18 @@ body,html{
     margin: 0;
     padding: 0;
     color: #aaa;
-    /*font: normal 10px "Press Start 2P", "Lucida Console", Monaco, monospace;*/
-    font: normal 14px "Lucida Console", Monaco, monospace;
+    font: normal 12pt "Press Start 2P", "Lucida Console", Monaco, monospace;
     width: 100%;
     height: 100%;
     border: none;
     white-space: pre-wrap;
     word-break:break-all;
-    line-height: 1em;
+
     overflow: hidden;
     position: relative;
 
 }
+
 #cli_instance .output{
     position: absolute;
     max-width: 100%;
