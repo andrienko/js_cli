@@ -33,8 +33,8 @@ TheCLI.extend('command_with_error',function(){
     the_undefined_function();
 });
 
-TheCLI.extend('dim',function(data,cli){
+TheCLI.extend('line',function(data,cli){
     var dim = cli.calculateDim();
-    cli.write('-'.repeat(dim));
+    cli.write(Array((dim || 1)+1).join('-'));
 
 })

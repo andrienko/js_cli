@@ -13,15 +13,6 @@ if(String.prototype.trim == 'undefined')
         return this.replace(/^\s+|\s+$/g,'');
     };
 
-Element.prototype.offsetWidthWithMargin = function() {
-    var style = getComputedStyle(this);
-    return this.offsetWidth + parseInt(style.marginLeft) + parseInt(style.marginRight);
-}
-
-String.prototype.repeat= function(n){
-    return Array((n || 1)+1).join(this);
-}
-
 TheCLI = {
 
     parent:null,

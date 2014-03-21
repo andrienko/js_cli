@@ -32,6 +32,12 @@ This will return the number of characters required to output the line:
 
     TheCLI.calculateDim();
 
+### executing the command
+
+This will execute the 'line' command as if it was typed into command line (will show error if it does not exist)
+
+    TheCLI.actionCommand('line');
+
 ### adding own command
 
     TheCLI.extend('hello',function(data,cli){
