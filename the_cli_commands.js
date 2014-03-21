@@ -1,7 +1,7 @@
-var the_cli = TheCLI;
+var the_cli = TheCLI; // I know i could use 'with'
 
 
-the_cli.hiddenCommands = ['cls','motd','barn','test','reset','command_with_error','centered'];
+the_cli.hiddenCommands = ['cls','motd','barn','test','reset','command_with_error','centered','line'];
 
 the_cli.extend('help',function(data,cli){
 
@@ -15,6 +15,38 @@ the_cli.extend('help',function(data,cli){
 the_cli.extend('barn',function(data,cli){
     cli.clear();
     cli.write('\n<span style="color:#0f0">           x\n.-. _______|\n|=|/     /  \\\n| |_____|_""_|\n|_|_[X]_|____|\n</span>');
+});
+
+the_cli.extend('motd',function(data,cli){
+    cli.clear();
+    cli.nl();
+    var dim = cli.calculateDim();
+
+    var write_c = function(string,pipe){
+        if(typeof pipe == 'undefined')pipe = '║';
+        var off = Math.floor((dim - string.replace(/(<([^>]+)>)/ig,"").length)/2);
+        cli.write(' '+pipe+ ' '.repeat(off)+string+' '.repeat(dim - string.replace(/(<([^>]+)>)/ig,"").length - off - 4)+pipe+' ')
+    }
+
+    cli.write(' ╔'+'═'.repeat(dim-4)+'╗ ').
+        write(' ║'+' '.repeat(dim-4)+'║ ');
+
+    write_c('Hello.');
+
+    cli.write(' ║'+' '.repeat(dim-4)+'║ ');
+
+    write_c('I am the fake command-line interpreter,');
+    write_c('written in JavaScript.');
+    cli.write(' ║'+' '.repeat(dim-4)+'║ ');
+    write_c('Type <b>help</b> for list of commands.');
+    cli.write(' ║'+' '.repeat(dim-4)+'║ ').
+        write(' ╟'+'─'.repeat(dim-4)+'╢ ').
+        write(' ║'+' '.repeat(dim-4)+'║ ');
+    write_c('(c) Andrienko, 2014. Released under <a href="http://opensource.org/licenses/MIT">MIT</a>.');
+
+    cli.write(' ║'+' '.repeat(dim-4)+'║ ').
+        write(' ╚'+'═'.repeat(dim-4)+'╝ ').nl();
+    write_c('The <a href="https://github.com/andrienko/js_cli">GitHub repository</a> is there for you to hack ;-)',' ');
 });
 
 the_cli.extend('test',function(data,cli){
@@ -45,12 +77,5 @@ the_cli.extend('line',function(data,cli){
 });
 
 the_cli.extend('centered',function(data,cli){
-    var dim = cli.calculateDim();
-    var text = data.parametersText;
-    if(text=='')return;
-    if(text.length>dim){
-        cli.write(text);
-        return;
-    }
-    else cli.write(' '.repeat((dim - text.length)/2)+text);
+
 });
