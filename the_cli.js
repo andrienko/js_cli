@@ -13,9 +13,17 @@ if(String.prototype.trim == 'undefined')
         return this.replace(/^\s+|\s+$/g,'');
     };
 
+Element.prototype.offsetWidthWithMargin = function() {
+    var style = getComputedStyle(this);
+    return this.offsetWidth + parseInt(style.marginLeft) + parseInt(style.marginRight);
+}
 
+String.prototype.repeat= function(n){
+    return Array((n || 1)+1).join(this);
+}
 
 TheCLI = {
+
     parent:null,
 
     output:null,
@@ -44,7 +52,9 @@ TheCLI = {
     },
 
     actionHardKeyPress:function (event){
+
         //console.log(event.keyCode);
+
         if(event.keyCode == 8)this.erase();
         else if(event.keyCode == 35)this.caret_end();
         else if(event.keyCode == 36)this.caret_home();
@@ -53,10 +63,25 @@ TheCLI = {
         else if(event.keyCode == 13)this.enter();
         else if(event.keyCode == 37)this.caret_back();
         else if(event.keyCode == 39)this.caret_next();
+        else if(event.keyCode == 38)this.history_prev();
+        else if(event.keyCode == 40)this.history_next();
+
+        if(event.keyCode >=112 && event.keyCode<=123){
+            return event;
+        }
 
         this.renderCommandLine();
 
         if([8,9,13].indexOf(event.keyCode) != -1)return false;  // Preventing backspace from happening
+    },
+
+    history_next:function(){
+
+    },
+
+    history_prev:function(){
+        this.commandline = this.commandline_history[this.commandline_history.length-1];
+
     },
 
     enter:function(){
@@ -221,6 +246,15 @@ TheCLI = {
 
         this.motd();
         return true;
+    },
+
+    calculateDim: function(){
+        var tempSpan = document.createElement('span');
+        tempSpan.innerHTML="x";
+        this.parent.appendChild(tempSpan);
+        var dimX = tempSpan.offsetWidth;
+        this.parent.removeChild(tempSpan);
+        return Math.floor(this.parent.offsetWidth / dimX);
     },
 
     extend:function(name,callback){

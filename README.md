@@ -26,6 +26,12 @@ This will output a line of text into console:
 
     TheCLI.write('text');
 
+### getting line width
+
+This will return the number of characters required to output the line:
+
+    TheCLI.calculateDim();
+
 ### adding own command
 
     TheCLI.extend('hello',function(data,cli){

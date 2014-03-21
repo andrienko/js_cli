@@ -29,6 +29,12 @@ TheCLI.extend('reset',function(data,cli){
     cli.init(cli.parent.id);
 });
 
-TheCLI.extend('command_with_error',function(data){
+TheCLI.extend('command_with_error',function(){
     the_undefined_function();
 });
+
+TheCLI.extend('dim',function(data,cli){
+    var dim = cli.calculateDim();
+    cli.write('-'.repeat(dim));
+
+})
