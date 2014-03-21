@@ -72,13 +72,6 @@ TheCLI = {
         if([8, 9, 13].indexOf(event.keyCode) != -1)return false;
     },
 
-    keyUp: function(event) {
-        if(event.keyCode == 17){
-            this.parent.removeChild(this.textbox);
-            this.textbox=null;
-        }
-    },
-
     history_next: function() {
 
     },
@@ -269,9 +262,6 @@ TheCLI = {
         }
         document.onkeydown = function(event) {
             return that.keyDown(event);
-        }
-        document.onkeyup = function(event) {
-            return that.keyUp(event);
         }
         return true;
     },
