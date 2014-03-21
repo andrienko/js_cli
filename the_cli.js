@@ -72,19 +72,13 @@ TheCLI = {
         if([8, 9, 13].indexOf(event.keyCode) != -1)return false;
     },
 
-    keyUp: function(event) {
-        if(event.keyCode == 17){
-            this.parent.removeChild(this.textbox);
-            this.textbox=null;
-        }
-    },
-
     history_next: function() {
 
     },
 
     history_prev: function() {
-        this.commandline = this.commandline_history[this.commandline_history.length - 1];
+        var prev = this.commandline_history[this.commandline_history.length - 1];
+        if(typeof prev != 'undefined')this.commandline = this.commandline_history[this.commandline_history.length - 1];
 
     },
 
@@ -269,9 +263,6 @@ TheCLI = {
         }
         document.onkeydown = function(event) {
             return that.keyDown(event);
-        }
-        document.onkeyup = function(event) {
-            return that.keyUp(event);
         }
         return true;
     },
