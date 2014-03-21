@@ -1,6 +1,8 @@
 CLI interpreter
 ===
 
+Demo: http://andrienko.github.io/js_cli
+
 This one is a fake command-line written in JS.
 
 ![Screenshot](screenshot.png)
