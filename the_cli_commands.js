@@ -7,6 +7,7 @@ TheCLI.extend('help',function(data,cli){
 });
 
 TheCLI.extend('barn',function(data,cli){
+    cli.clear();
     cli.write('\n<span style="color:#0f0">           x\n.-. _______|\n|=|/     /  \\\n| |_____|_""_|\n|_|_[X]_|____|\n</span>');
 });
 
@@ -34,7 +35,17 @@ TheCLI.extend('command_with_error',function(){
 });
 
 TheCLI.extend('line',function(data,cli){
-    var dim = cli.calculateDim();
-    cli.write(Array((dim || 1)+1).join('-'));
-
+    cli.write('-'.repeat(cli.calculateDim()));
 })
+
+TheCLI.extend('centered',function(data,cli){
+    var dim = cli.calculateDim();
+    var text = data.parametersText;
+    if(text=='')return;
+    if(text.length>dim){
+        cli.write(text);
+        return;
+    }
+    else cli.write(' '.repeat((dim - text.length)/2)+text);
+})
+

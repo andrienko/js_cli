@@ -14,7 +14,7 @@ if(String.prototype.trim == 'undefined')
     };
 
 String.prototype.repeat= function(n){
-    return Array((n || 1)+1).join(this);
+    return Array((Math.floor(n) || 1)+1).join(this);
 }
 
 TheCLI = {
@@ -82,7 +82,7 @@ TheCLI = {
     enter:function(){
         this.commandline_history.push(this.commandline);
         this.write(this.commandline_prepend+this.commandline.stripTags(this.tagsAllowed));
-        this.actionCommand(this.commandline);
+        this.run(this.commandline);
         this.commandline = '';
     },
 
@@ -109,7 +109,7 @@ TheCLI = {
 
     clear:function(){this.output.innerHTML='';return this;},
 
-    actionCommand:function(commandline){
+    run:function(commandline){
         commandline=commandline.trim();
         if(commandline=='')return;
 
@@ -127,20 +127,19 @@ TheCLI = {
         }
     },
 
-    motd:function(){
-        this.write('<a href="https://github.com/andrienko/js_cli">The CLI [version 1.0.1000]</a>')
-            .write('(с) Andrienko, 2014 (released under <a href="http://opensource.org/licenses/MIT">MIT</a>)')
-            .nl()
-            .write(document.location.href)
-            .nl()
-            .write('Hello and welcome to the command line interpreter!')
-            .write('Type <b>help</b> to get list of commands available')
-            .nl();
-    },
-
     commands:{
         clear:function(data,cli){cli.clear();},
-        cls:function(data,cli){cli.clear();}
+        cls:function(data,cli){cli.clear();},
+        motd:function(data,cli){
+            cli.write('<a href="https://github.com/andrienko/js_cli">The CLI [version 1.0.1000]</a>')
+                .write('(с) Andrienko, 2014 (released under <a href="http://opensource.org/licenses/MIT">MIT</a>)')
+                .nl()
+                .write(document.location.href)
+                .nl()
+                .write('Hello and welcome to the command line interpreter!')
+                .write('Type <b>help</b> to get list of commands available')
+                .nl();
+        }
     },
 
     parseCommand:function(text){
@@ -239,7 +238,7 @@ TheCLI = {
 
         this.renderCommandLine();
 
-        this.motd();
+        this.run('motd');
 
         var that = this;
 

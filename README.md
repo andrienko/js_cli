@@ -36,7 +36,7 @@ This will return the number of characters required to output the line:
 
 This will execute the 'line' command as if it was typed into command line (will show error if it does not exist)
 
-    TheCLI.actionCommand('line');
+    TheCLI.run('line');
 
 ### adding own command
 
