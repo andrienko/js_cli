@@ -81,16 +81,15 @@ So, it may be pretty tough, but actually nothing special.
 Plans for future
 ---
 
- - command history
- - blinking cursor
- - colorized output
  - unknown command processing functions
- - suggest functions
- - PgUp/PgDn
- - parameter parsing (add ="value" and --parameter, -parameter, /parameter), non-breaking "not breaked"
+ - suggest functions (for extensions)
  - Console inside content mode
- - copypaste using clippy
- - extended suggests (c will become cl if there are clear and cls)
+ - add allowed (browser-allowed) keys handeling (F-keys etc, like F5 should work normally)
+ - locks (for input into a function, etc) (input loops too, maybe. All the input goes to function when locked.
+   Exit using Ctrl+C.)
+
+Also, alongside
+
  - fake file system
- - add allowed keys handeling (F-keys etc)
- - locks (for input into a function, etc)
+ - parameter parsing (add ="value" and --parameter, -parameter, /parameter), non-breaking "not breaked"
+ - copypaste using clippy
