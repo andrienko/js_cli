@@ -17,6 +17,36 @@ String.prototype.repeat = function(n) {
     return Array((Math.floor(n) || 1) + 1).join(this);
 }
 
+var getMostCommonSymbols = function(words){
+    var commonSymbols ='';
+    var numOfCommonSymbols = 0;
+    var max = 0;
+    for(var index in words)if(words[index].length>max)max=words[index].length;
+
+    while(true && numOfCommonSymbols<max){
+        numOfCommonSymbols++;
+        for(var index in words)
+            if(words[index].indexOf(words[0].substr(0,numOfCommonSymbols))!=0)
+                return commonSymbols;
+
+        commonSymbols=words[0].substr(0,numOfCommonSymbols);
+    }
+    return commonSymbols;
+};
+
+var indexOf = function(haystack,needle){
+    if(Array.prototype.indexOf)window.indexOf = function(haystack,needle){return haystack.indexOf(needle)};
+    else window.indexOf = function(haystack,needle){
+        var i,index = -1;
+        for(i = 0; i < haystack.length; i++)if(haystack[i] === needle) {
+            index = i;
+            break;
+        }
+        return index;
+    };
+    return window.indexOf(haystack,needle);
+};
+
 TheCLI = {
 
     parent: null,
@@ -38,6 +68,7 @@ TheCLI = {
     ctrlIsDown: false,
 
     keyPress: function(event) {
+
         var keyCode = event.which;
         if(navigator.appName.indexOf("Microsoft") != -1)keyCode = event.keyCode;
 
@@ -49,7 +80,6 @@ TheCLI = {
         event.preventDefault();
         return false;
 
-
     },
 
     keyDown: function(event) {
@@ -57,6 +87,8 @@ TheCLI = {
         //console.log(event.keyCode);
 
         if(event.keyCode == 8)this.erase();
+        else if(event.keyCode == 33)this.scrollUp();
+        else if(event.keyCode == 34)this.scrollDown();
         else if(event.keyCode == 35)this.caret_end();
         else if(event.keyCode == 36)this.caret_home();
         else if(event.keyCode == 46)this.del();
@@ -72,21 +104,50 @@ TheCLI = {
         if([8, 9, 13].indexOf(event.keyCode) != -1)return false;
     },
 
-    history_next: function() {
+    history_step:0,
 
+    history_next: function() {
+        if(this.history_step>0)this.history_step-=1;
+        var prev = this.commandline_history[this.commandline_history.length - this.history_step];
+        if(typeof prev != 'undefined')this.commandline = prev;
+        console.log(this.history_step);
     },
 
     history_prev: function() {
-        var prev = this.commandline_history[this.commandline_history.length - 1];
-        if(typeof prev != 'undefined')this.commandline = this.commandline_history[this.commandline_history.length - 1];
+        if(this.history_step<this.commandline_history.length)this.history_step+=1;
+        var prev = this.commandline_history[this.commandline_history.length - this.history_step];
+        if(typeof prev != 'undefined')this.commandline = prev;
+        console.log(this.history_step);
+    },
 
+    posBottom:0,
+
+    scrollDown:function(){
+        this.posBottom-=1;
+        if(this.posBottom<0)this.posBottom=0;
+        this.scrollUpdate();
+    },
+
+    scrollUp:function(){
+        this.posBottom+=1;
+        this.scrollUpdate();
+    },
+
+    scrollUpdate:function(){
+        this.output.style.bottom = (-this.posBottom*1.5+1.5)+"em";
     },
 
     enter: function() {
+
+        var index = indexOf(this.commandline_history,this.commandline);
+        if(index!=-1)this.commandline_history.splice(index,1);
         this.commandline_history.push(this.commandline);
+        this.history_step=0;
+
         this.write(this.commandline_prepend + this.commandline.stripTags(this.tagsAllowed));
         this.run(this.commandline);
         this.commandline = '';
+
     },
 
     suggest: function() {
@@ -97,7 +158,10 @@ TheCLI = {
                 acc.push(com);
         if(acc.length == 1)this.commandline = acc[0];
         else if(acc.length <= 0)return;
-        else this.write(acc.join(' '));
+        else{
+            this.write(acc.join(' '));
+            this.commandline = getMostCommonSymbols(acc);
+        }
     },
 
     write: function(text, noBreak) {
@@ -105,6 +169,8 @@ TheCLI = {
         var theLine = document.createElement('span');
         theLine.innerHTML = text;
         this.output.appendChild(theLine);
+        this.posBottom=0;
+        this.scrollUpdate();
         return this;
     },
 
@@ -114,6 +180,8 @@ TheCLI = {
 
     clear: function() {
         this.output.innerHTML = '';
+        this.posBottom=0;
+        this.scrollUpdate();
         return this;
     },
 
@@ -143,7 +211,7 @@ TheCLI = {
             cli.clear();
         },
         motd: function(data, cli) {
-            cli.write('<a href="https://github.com/andrienko/js_cli">The CLI [version 1.0.1000]</a>')
+            cli.write('<a href="https://github.com/andrienko/js_cli">The CLI [version 1.1.2000]</a>')
                 .write('(с) Andrienko, 2014 (released under <a href="http://opensource.org/licenses/MIT">MIT</a>)')
                 .nl()
                 .write(document.location.href)
@@ -175,7 +243,6 @@ TheCLI = {
     caret_next: function() {
         if(this.caret_pos <= this.commandline.length && this.caret_pos >= 0)this.caret_pos++;
         if(this.caret_pos >= this.commandline.length)this.caret_pos = -1;
-
     },
     caret_end: function() {
         this.caret_pos = -1;
@@ -250,8 +317,6 @@ TheCLI = {
             e.blur();
         };
 
-
-
         this.renderCommandLine();
 
         this.run('motd');
@@ -277,6 +342,11 @@ TheCLI = {
         return Math.floor(this.parent.offsetWidth / dimX);
     },
 
+    /**
+     * Create a command-line parameter, setting callback function as a handler
+     * @param name The command to be used
+     * @param callback Handler function
+     */
     extend: function(name, callback) {
         this.commands[name.toLower(this.caseSensitiveCommands)] = callback;
     }
