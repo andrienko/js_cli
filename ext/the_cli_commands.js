@@ -100,6 +100,8 @@
 
     });
 
+    the_cli.extend('command_to_test_suggestions',function(){});
+
     the_cli.extend('command_with_error',function(){
         the_undefined_function();
     });
