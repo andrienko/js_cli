@@ -164,18 +164,36 @@ TheCLI = {
 
     },
 
+    getSuggestion:function(singleCommand,choice){
+
+        var acc = [];
+
+        for(var ch in choice)
+            if(ch.indexOf(singleCommand)==0)
+                acc.push(ch);
+
+        if(acc.length == 1)return acc[0];
+        else if(acc.length<=0)return '';
+        else{
+            return acc;
+        }
+
+    },
+
     suggest: function() {
         if(this.commandline.trim() == '')return;
-        var acc = [];
-        for(var com in this.commands)
-            if(com.indexOf(this.commandline) == 0)
-                acc.push(com);
-        if(acc.length == 1)this.commandline = acc[0];
-        else if(acc.length <= 0)return;
-        else{
-            this.write(acc.join(' '));
-            this.commandline = getMostCommonSymbols(acc);
+
+        var commands = this.parseCommand(this.commandline);
+        var command = commands.parameters[commands.parameters.length-1];
+        var commons = this.getSuggestion(command,this.commands);
+
+        if(typeof commons == 'object'){
+            this.write(commons.join(' '));
+            commons = getMostCommonSymbols(commons);
         }
+
+        this.commandline += commons.substr(command.length);
+
     },
 
     write: function(text, noBreak) {
@@ -241,7 +259,9 @@ TheCLI = {
             cli.write(list);
         }
 
-},
+    },
+
+    hints: {},
 
     parseCommand: function(text) {
 
@@ -364,8 +384,13 @@ TheCLI = {
      * Create a command-line parameter, setting callback function as a handler
      * @param name The command to be used
      * @param callback Handler function
+     * @param suggest Function to suggest (if defined - runs on tab press and, if array returned, shows user the
+     * list of variants + adds common symbols to user input and, if single value is returned, user input is replaced
+     * with it)
      */
-    extend: function(name, callback) {
-        this.commands[name.toLower(this.caseSensitiveCommands)] = callback;
+    extend: function(name, callback, suggest) {
+        name = name.toLower(this.caseSensitiveCommands);
+        this.commands[name] = callback;
+        if(typeof suggest == 'function')this.hints[name] = suggest;
     }
 };
