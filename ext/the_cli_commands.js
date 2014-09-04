@@ -11,15 +11,6 @@
         cli.nl();
     });
 
-    the_cli.extend('list', function (data, cli) {
-        var list = 'Following commands exist:';
-        for(var command in cli.commands){
-            list+=' '+ command;
-        }
-        cli.nl().write(list);
-    });
-
-
     the_cli.extend('barn',function(data,cli){
         //cli.clear();
         cli.write('\n<span style="color:#0f0">           x\n.-. _______|\n|=|/     /  \\\n| |_____|_""_|\n|_|_[X]_|____|\n</span>');

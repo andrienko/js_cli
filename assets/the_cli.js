@@ -1,3 +1,12 @@
+if (!String.prototype.format) {
+    String.prototype.format = function() {
+        var args = arguments;
+        return this.replace(/{(\d+)}/g, function(match, number){
+            return typeof args[number] != 'undefined' ? args[number]: match;
+        });
+    };
+}
+
 String.prototype.stripTags = function(doornot) {
     if(doornot != true)return this.replace(/</g, '&lt;');
     return this;
@@ -61,7 +70,12 @@ TheCLI = {
     commandline_history: [],
 
     caret_pos: -1,
-    commandline_prepend: 'С:\\>',
+    commandline_prepend: '>',
+
+    strings:{
+        notfound:'{0}:command not found',
+        anerror:'{0}: an error uccured\n\n{1}'
+    },
 
     zerojs:null,
 
@@ -195,11 +209,11 @@ TheCLI = {
                 this.commands[commandline.command](commandline, this);
             }
             catch(e) {
-                this.write(commandline.command.stripTags(this.tagsAllowed) + ': an error uccured\n\n' + e.message).nl();
+                this.write(this.strings.anerror.format(commandline.command.stripTags(this.tagsAllowed),e.message)).nl();
             }
         }
         else {
-            this.write(commandline.command.stripTags(this.tagsAllowed) + ': command not found');
+            this.write(this.strings.notfound.format(commandline.command.stripTags(this.tagsAllowed)));
         }
     },
 
@@ -211,16 +225,23 @@ TheCLI = {
             cli.clear();
         },
         motd: function(data, cli) {
-            cli.write('<a href="https://github.com/andrienko/js_cli">The CLI [version 1.1.2000]</a>')
+            cli.clear();
+            cli.write('<a href="https://github.com/andrienko/js_cli">The CLI [version 1.2.4000]</a>')
+                .nl()
                 .write('(с) Andrienko, 2014 (released under <a href="http://opensource.org/licenses/MIT">MIT</a>)')
-                .nl()
-                .write(document.location.href)
-                .nl()
                 .write('Hello and welcome to the command line interpreter!')
-                .write('Type <b>help</b> to get list of commands available')
+                .write('Type <b>list</b> to get list of commands available')
                 .nl();
+        },
+        list: function (data, cli) {
+            var list = '';
+            for(var command in cli.commands){
+                list+=' '+ command;
+            }
+            cli.write(list);
         }
-    },
+
+},
 
     parseCommand: function(text) {
 
@@ -319,16 +340,13 @@ TheCLI = {
 
         this.renderCommandLine();
 
-        this.run('motd');
+        if(this.commands.motd != undefined)this.run('motd');
 
         var that = this;
 
-        document.onkeypress = function(event) {
-            return that.keyPress(event);
-        }
-        document.onkeydown = function(event) {
-            return that.keyDown(event);
-        }
+        document.onkeypress = function(event) {return that.keyPress(event);};
+        document.onkeydown = function(event) {return that.keyDown(event);};
+
         return true;
     },
 
