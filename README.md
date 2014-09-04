@@ -65,6 +65,12 @@ The second parameter is the cli object which contains reference to current TheCL
 It is there for sake of extendability so please use it if you need to call the cli from your function (for example,
 to output something to the cli)
 
+Files
+---
+
+the_cli.js is a main file. Also it requires style.css to be attached to page (otherwise everything will be ugly).
+the_cli_commands.js and the_cli_filesystem.js are files that contain examples of commands you can create using the API.
+
 Running multiple instances on same page
 ---
 It was not really meant to be used alongside with something else, but you can add some tiny modifications yourself
