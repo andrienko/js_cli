@@ -1,5 +1,3 @@
-/*@import url('http://fonts.googleapis.com/css?family=Press+Start+2P&subset=latin,cyrillic');*/
-
 *{
     margin: 0;
     padding: 0;
@@ -22,7 +20,7 @@ body,html{
     margin: 0;
     padding: 0;
     color: #aaa;
-    font: normal 12pt "Lucida Console", Monaco, monospace;
+    font: normal 12pt monospace;
     width: 100%;
     height: 100%;
     border: none;
