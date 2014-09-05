@@ -87,8 +87,6 @@ So, it may be pretty tough, but actually nothing special.
 Plans for future
 ---
 
- - unknown command processing functions
- - suggest functions (for extensions)
  - Console inside content mode
  - add allowed (browser-allowed) keys handeling (F-keys etc, like F5 should work normally)
  - locks (for input into a function, etc) (input loops too, maybe. All the input goes to function when locked.
