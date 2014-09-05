@@ -184,8 +184,11 @@ TheCLI = {
         if(this.commandline.trim() == '')return;
 
         var commands = this.parseCommand(this.commandline);
-        var command = commands.parameters[commands.parameters.length-1];
-        var commons = this.getSuggestion(command,this.commands);
+        var command = commands.command;
+
+        var commons = this.getSuggestion(command,
+            typeof this.hints[command] == 'function'?this.hints[command](commands,this):this.commands
+        );
 
         if(typeof commons == 'object'){
             this.write(commons.join(' '),false,true);
@@ -301,7 +304,7 @@ TheCLI = {
      */
     parseCommand: function(text) {
 
-        var parameters = text.split(/\s+|\s*=\s*/);
+        var parameters = text.match(/".*"|\S+/ig);
         var command = parameters[0].toLower(this.caseSensitiveCommands);
 
         return {
@@ -310,6 +313,7 @@ TheCLI = {
             parameters: parameters,
             parametersText: text.substr(command.length).trim()
         }
+
 
     },
 
