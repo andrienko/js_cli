@@ -93,10 +93,13 @@
 
     the_cli.extend('trash',function(data,cli){
 
-        for(var i=0;i<=100;i++){
-            if(i%10==0)cli.nl().write("Batman!");
-            cli.nl().write(Math.random());
+        var line = '';
+        for(var i=0;i<90000;i++){
+            var code = Math.random() * 32 + 9472;
+            line+=String.fromCharCode(code);
         }
+        cli.write(line);
+
 
     });
 
