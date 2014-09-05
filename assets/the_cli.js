@@ -99,20 +99,18 @@ TheCLI = {
 
     keyDown: function(event) {
 
-        //console.log(event.keyCode);
-
         if(event.keyCode == 8)this.erase();
         else if(event.keyCode == 33)this.scrollUp();
         else if(event.keyCode == 34)this.scrollDown();
-        else if(event.keyCode == 35)this.caret_end();
-        else if(event.keyCode == 36)this.caret_home();
+        else if(event.keyCode == 35)this.caretEnd();
+        else if(event.keyCode == 36)this.caretHome();
+        else if(event.keyCode == 37)this.caretBack();
+        else if(event.keyCode == 39)this.caretNext();
         else if(event.keyCode == 46)this.del();
         else if(event.keyCode == 9)this.suggest();
         else if(event.keyCode == 13)this.enter();
-        else if(event.keyCode == 37)this.caret_back();
-        else if(event.keyCode == 39)this.caret_next();
-        else if(event.keyCode == 38)this.history_prev();
-        else if(event.keyCode == 40)this.history_next();
+        else if(event.keyCode == 38)this.historyPrev();
+        else if(event.keyCode == 40)this.historyNext();
 
         this.renderCommandLine();
 
@@ -121,14 +119,14 @@ TheCLI = {
 
     history_step:0,
 
-    history_next: function() {
+    historyNext: function() {
         if(this.history_step>0)this.history_step-=1;
         var prev = this.commandline_history[this.commandline_history.length - this.history_step];
         if(typeof prev != 'undefined')this.commandline = prev;
         console.log(this.history_step);
     },
 
-    history_prev: function() {
+    historyPrev: function() {
         if(this.history_step<this.commandline_history.length)this.history_step+=1;
         var prev = this.commandline_history[this.commandline_history.length - this.history_step];
         if(typeof prev != 'undefined')this.commandline = prev;
@@ -216,10 +214,12 @@ TheCLI = {
         return this;
     },
 
+    /** Simply writes a new line */
     nl: function() {
         return this.write('');
     },
 
+    /** Clears the console */
     clear: function() {
         this.output.innerHTML = '';
         this.posBottom=0;
@@ -227,6 +227,10 @@ TheCLI = {
         return this;
     },
 
+    /**
+     * Run command. This command processes user input.
+     * @param {String} commandline The string to be processed as if it was inputted by user.
+     */
     run: function(commandline) {
         commandline = commandline.trim();
         if(commandline == '')return;
@@ -268,7 +272,6 @@ TheCLI = {
             }
             cli.write(list);
         }
-
     },
 
     hints: {},
@@ -287,25 +290,25 @@ TheCLI = {
 
     },
 
-    caret_back: function() {
+    caretBack: function() {
         if(this.caret_pos < 0)this.caret_pos = this.commandline.length;
         if(this.caret_pos > 0)this.caret_pos--;
     },
-    caret_next: function() {
+    caretNext: function() {
         if(this.caret_pos <= this.commandline.length && this.caret_pos >= 0)this.caret_pos++;
         if(this.caret_pos >= this.commandline.length)this.caret_pos = -1;
     },
-    caret_end: function() {
+    caretEnd: function() {
         this.caret_pos = -1;
     },
-    caret_home: function() {
+    caretHome: function() {
         this.caret_pos = 0;
     },
 
     enterChar: function(char) {
         if(this.caret_pos != -1) {
             this.commandline = this.commandline.substr(0, this.caret_pos) + char + this.commandline.substr(this.caret_pos);
-            this.caret_next();
+            this.caretNext();
         }
         else this.commandline += char;
     },
@@ -313,7 +316,7 @@ TheCLI = {
     erase: function() {
         if(this.caret_pos != -1) {
             this.commandline = this.commandline.substr(0, this.caret_pos - 1) + this.commandline.substr(this.caret_pos);
-            this.caret_back();
+            this.caretBack();
         }
         else this.commandline = this.commandline.substring(0, this.commandline.length - 1);
     },
@@ -335,6 +338,11 @@ TheCLI = {
         }
     },
 
+    /**
+     * Initialize the cli - generate elements required and attach events.
+     * @param objectID
+     * @returns {boolean}
+     */
     init: function(objectID) {
 
         var parent = document.getElementById(objectID);
@@ -380,6 +388,10 @@ TheCLI = {
         return true;
     },
 
+    /**
+     * Calculate the number of characteds that is (by default) can be fitted into a single line.
+     * @returns {number}
+     */
     calculateDim: function() {
         var tempSpan = document.createElement('span');
         tempSpan.innerHTML = "M".repeat(20);    // Black magic
