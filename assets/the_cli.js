@@ -1,3 +1,12 @@
+if (!String.prototype.format) {
+    String.prototype.format = function() {
+        var args = arguments;
+        return this.replace(/{(\d+)}/g, function(match, number){
+            return typeof args[number] != 'undefined' ? args[number]: match;
+        });
+    };
+}
+
 String.prototype.stripTags = function(doornot) {
     if(doornot != true)return this.replace(/</g, '&lt;');
     return this;
@@ -51,6 +60,7 @@ TheCLI = {
 
     parent: null,
 
+    lastWrittenText: '',
     output: null,
     input: null,
 
@@ -61,7 +71,13 @@ TheCLI = {
     commandline_history: [],
 
     caret_pos: -1,
-    commandline_prepend: 'С:\\>',
+    commandline_prepend: '>',
+
+    strings:{
+        notfound:'{0}:command not found',
+        anerror:'{0}: an error occurred\n{1}',
+        errorproc:'Processor "{0}": an error occurred: \n{1}'
+    },
 
     zerojs:null,
 
@@ -84,20 +100,18 @@ TheCLI = {
 
     keyDown: function(event) {
 
-        //console.log(event.keyCode);
-
         if(event.keyCode == 8)this.erase();
         else if(event.keyCode == 33)this.scrollUp();
         else if(event.keyCode == 34)this.scrollDown();
-        else if(event.keyCode == 35)this.caret_end();
-        else if(event.keyCode == 36)this.caret_home();
+        else if(event.keyCode == 35)this.caretEnd();
+        else if(event.keyCode == 36)this.caretHome();
+        else if(event.keyCode == 37)this.caretBack();
+        else if(event.keyCode == 39)this.caretNext();
         else if(event.keyCode == 46)this.del();
         else if(event.keyCode == 9)this.suggest();
         else if(event.keyCode == 13)this.enter();
-        else if(event.keyCode == 37)this.caret_back();
-        else if(event.keyCode == 39)this.caret_next();
-        else if(event.keyCode == 38)this.history_prev();
-        else if(event.keyCode == 40)this.history_next();
+        else if(event.keyCode == 38)this.historyPrev();
+        else if(event.keyCode == 40)this.historyNext();
 
         this.renderCommandLine();
 
@@ -106,14 +120,14 @@ TheCLI = {
 
     history_step:0,
 
-    history_next: function() {
+    historyNext: function() {
         if(this.history_step>0)this.history_step-=1;
         var prev = this.commandline_history[this.commandline_history.length - this.history_step];
         if(typeof prev != 'undefined')this.commandline = prev;
         console.log(this.history_step);
     },
 
-    history_prev: function() {
+    historyPrev: function() {
         if(this.history_step<this.commandline_history.length)this.history_step+=1;
         var prev = this.commandline_history[this.commandline_history.length - this.history_step];
         if(typeof prev != 'undefined')this.commandline = prev;
@@ -150,21 +164,51 @@ TheCLI = {
 
     },
 
-    suggest: function() {
-        if(this.commandline.trim() == '')return;
+    getSuggestion:function(singleCommand,choice){
+
         var acc = [];
-        for(var com in this.commands)
-            if(com.indexOf(this.commandline) == 0)
-                acc.push(com);
-        if(acc.length == 1)this.commandline = acc[0];
-        else if(acc.length <= 0)return;
+
+        for(var ch in choice)
+            if(ch.indexOf(singleCommand)==0)
+                acc.push(ch);
+
+        if(acc.length == 1)return acc[0];
+        else if(acc.length<=0)return '';
         else{
-            this.write(acc.join(' '));
-            this.commandline = getMostCommonSymbols(acc);
+            return acc;
         }
+
     },
 
-    write: function(text, noBreak) {
+    suggest: function() {
+        if(this.commandline.trim() == '')return;
+
+        var commands = this.parseCommand(this.commandline);
+        var command = commands.command;
+
+        var commons = this.getSuggestion(command,
+            typeof this.hints[command] == 'function'?this.hints[command](commands,this):this.commands
+        );
+
+        if(typeof commons == 'object'){
+            this.write(commons.join(' '),false,true);
+            commons = getMostCommonSymbols(commons);
+        }
+
+        this.commandline += commons.substr(command.length);
+
+    },
+
+
+    /**
+     * Writes line to the console
+     * @param {String} text The text to write
+     * @param {Boolean} [noBreak] Whether the new line should be created
+     * @param {Boolean} [noRepeat] Whether
+     */
+    write: function(text, noBreak,noRepeat) {
+        if(noRepeat == true && this.lastWrittenText == text)return;
+        this.lastWrittenText = text;
         if(!noBreak)text += '\n';
         var theLine = document.createElement('span');
         theLine.innerHTML = text;
@@ -174,10 +218,12 @@ TheCLI = {
         return this;
     },
 
+    /** Simply writes a new line */
     nl: function() {
         return this.write('');
     },
 
+    /** Clears the console */
     clear: function() {
         this.output.innerHTML = '';
         this.posBottom=0;
@@ -185,6 +231,10 @@ TheCLI = {
         return this;
     },
 
+    /**
+     * Run command. This command processes user input.
+     * @param {String} commandline The string to be processed as if it was inputted by user.
+     */
     run: function(commandline) {
         commandline = commandline.trim();
         if(commandline == '')return;
@@ -195,11 +245,23 @@ TheCLI = {
                 this.commands[commandline.command](commandline, this);
             }
             catch(e) {
-                this.write(commandline.command.stripTags(this.tagsAllowed) + ': an error uccured\n\n' + e.message).nl();
+                this.write(this.strings.anerror.format(commandline.command.stripTags(this.tagsAllowed),e.message)).nl();
             }
         }
         else {
-            this.write(commandline.command.stripTags(this.tagsAllowed) + ': command not found');
+            for(var name in this.processors){
+                if(name!='default' && typeof this.processors[name] == 'function'){
+                    var result = false;
+                    try{
+                        result = this.processors[name](commandline,this);
+                    }
+                    catch (e){
+                        this.write(this.strings.errorproc.format(name.stripTags(this.tagsAllowed),e.message)).nl();
+                    }
+                    if(result)return;
+                }
+            }
+            if(typeof this.processors.default == 'function')this.processors.default(commandline,this);
         }
     },
 
@@ -211,20 +273,38 @@ TheCLI = {
             cli.clear();
         },
         motd: function(data, cli) {
-            cli.write('<a href="https://github.com/andrienko/js_cli">The CLI [version 1.1.2000]</a>')
+            cli.clear();
+            cli.write('<a href="https://github.com/andrienko/js_cli">The CLI [version 1.2.4000]</a>')
+                .nl()
                 .write('(с) Andrienko, 2014 (released under <a href="http://opensource.org/licenses/MIT">MIT</a>)')
-                .nl()
-                .write(document.location.href)
-                .nl()
                 .write('Hello and welcome to the command line interpreter!')
-                .write('Type <b>help</b> to get list of commands available')
+                .write('Type <b>list</b> to get list of commands available')
                 .nl();
+        },
+        list: function (data, cli) {
+            var list = '';
+            for(var command in cli.commands){
+                list+=' '+ command;
+            }
+            cli.write(list);
         }
     },
 
+    hints: {},
+    processors: {
+        'default':function(commandLine,cli){
+            cli.write(cli.strings.notfound.format(commandLine.command.stripTags(this.tagsAllowed)));
+        }
+    },
+
+    /**
+     * Parses command line input. Returns an object containing input parts and the main command.
+     * @param {String} text
+     * @return {Object}
+     */
     parseCommand: function(text) {
 
-        var parameters = text.split(/\s+|\s*=\s*/);
+        var parameters = text.match(/".*"|\S+/ig);
         var command = parameters[0].toLower(this.caseSensitiveCommands);
 
         return {
@@ -234,27 +314,28 @@ TheCLI = {
             parametersText: text.substr(command.length).trim()
         }
 
+
     },
 
-    caret_back: function() {
+    caretBack: function() {
         if(this.caret_pos < 0)this.caret_pos = this.commandline.length;
         if(this.caret_pos > 0)this.caret_pos--;
     },
-    caret_next: function() {
+    caretNext: function() {
         if(this.caret_pos <= this.commandline.length && this.caret_pos >= 0)this.caret_pos++;
         if(this.caret_pos >= this.commandline.length)this.caret_pos = -1;
     },
-    caret_end: function() {
+    caretEnd: function() {
         this.caret_pos = -1;
     },
-    caret_home: function() {
+    caretHome: function() {
         this.caret_pos = 0;
     },
 
     enterChar: function(char) {
         if(this.caret_pos != -1) {
             this.commandline = this.commandline.substr(0, this.caret_pos) + char + this.commandline.substr(this.caret_pos);
-            this.caret_next();
+            this.caretNext();
         }
         else this.commandline += char;
     },
@@ -262,7 +343,7 @@ TheCLI = {
     erase: function() {
         if(this.caret_pos != -1) {
             this.commandline = this.commandline.substr(0, this.caret_pos - 1) + this.commandline.substr(this.caret_pos);
-            this.caret_back();
+            this.caretBack();
         }
         else this.commandline = this.commandline.substring(0, this.commandline.length - 1);
     },
@@ -284,6 +365,11 @@ TheCLI = {
         }
     },
 
+    /**
+     * Initialize the cli - generate elements required and attach events.
+     * @param objectID
+     * @returns {boolean}
+     */
     init: function(objectID) {
 
         var parent = document.getElementById(objectID);
@@ -292,6 +378,8 @@ TheCLI = {
             console.error(objectID + ' not found :(');
             return false;
         }
+
+        parent.innerHTML='';
 
         var output = parent.getElementsByClassName('output');
         if(output.length < 1) {
@@ -319,19 +407,20 @@ TheCLI = {
 
         this.renderCommandLine();
 
-        this.run('motd');
+        if(this.commands.motd != undefined)this.run('motd');
 
         var that = this;
 
-        document.onkeypress = function(event) {
-            return that.keyPress(event);
-        }
-        document.onkeydown = function(event) {
-            return that.keyDown(event);
-        }
+        document.onkeypress = function(event) {return that.keyPress(event);};
+        document.onkeydown = function(event) {return that.keyDown(event);};
+
         return true;
     },
 
+    /**
+     * Calculate the number of characteds that is (by default) can be fitted into a single line.
+     * @returns {number}
+     */
     calculateDim: function() {
         var tempSpan = document.createElement('span');
         tempSpan.innerHTML = "M".repeat(20);    // Black magic
@@ -344,10 +433,25 @@ TheCLI = {
 
     /**
      * Create a command-line parameter, setting callback function as a handler
-     * @param name The command to be used
-     * @param callback Handler function
+     * @param {String} name The command to be used
+     * @param {Function} callback Handler function
+     * @param {Function} [suggest] Function to suggest (if defined - runs on tab press and, if array returned, shows
+     * user the list of variants + adds common symbols to user input and, if single value is returned, user input is
+     * replaced with it)
      */
-    extend: function(name, callback) {
-        this.commands[name.toLower(this.caseSensitiveCommands)] = callback;
+    extend: function(name, callback, suggest) {
+        name = name.toLower(this.caseSensitiveCommands);
+        this.commands[name] = callback;
+        if(typeof suggest == 'function')this.hints[name] = suggest;
+    },
+
+    /**
+     * Add a callback to process unknown (unrecognized) input. All callbacks will be tried until one of them returns
+     * true, except one called 'default', which, if defined, will be called last.
+     * @param {String} id And id of processor. The callback will be stored in TheCLI.processors[id].
+     * @param {Function} callback The function to process input. If it returns false - the next processor will be called
+     */
+    addProcessor: function(id,callback){
+        this.processors[id] = callback;
     }
 };

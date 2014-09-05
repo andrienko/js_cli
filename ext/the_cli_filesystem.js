@@ -51,12 +51,13 @@
     the_cli.hiddenCommands.push('cd');
 
     the_cli.extend('cd',function(command,cli){
+
         if(command.parametersText == '..'){
             cli.path.pop();
             the_cli.currentDir = the_cli.get_dir(cli.path);
         }
-        else if(typeof cli.currentDir != 'undefined' && cli.currentDir.hasOwnProperty(command.parametersText) && typeof cli.currentDir[command.parametersText] == 'object'){
-            cli.path.push(command.parametersText);
+        else if(typeof cli.currentDir != 'undefined' && cli.currentDir.hasOwnProperty(command.parametersText.toLowerCase()) && typeof cli.currentDir[command.parametersText.toLowerCase()] == 'object'){
+            cli.path.push(command.parametersText.toLowerCase());
             the_cli.currentDir = the_cli.get_dir(cli.path);
         }
         else cli.write('Could not find directory '+command.parametersText);

@@ -11,15 +11,6 @@
         cli.nl();
     });
 
-    the_cli.extend('list', function (data, cli) {
-        var list = 'Following commands exist:';
-        for(var command in cli.commands){
-            list+=' '+ command;
-        }
-        cli.nl().write(list);
-    });
-
-
     the_cli.extend('barn',function(data,cli){
         //cli.clear();
         cli.write('\n<span style="color:#0f0">           x\n.-. _______|\n|=|/     /  \\\n| |_____|_""_|\n|_|_[X]_|____|\n</span>');
@@ -102,11 +93,19 @@
 
     the_cli.extend('trash',function(data,cli){
 
-        for(var i=0;i<=100;i++){
-            if(i%10==0)cli.nl().write("Batman!");
-            cli.nl().write(Math.random());
+        var line = '';
+        for(var i=0;i<90000;i++){
+            var code = Math.random() * 32 + 9472;
+            line+=String.fromCharCode(code);
         }
+        cli.write(line);
 
+
+    });
+
+    the_cli.extend('command_to_test_suggestions',function(){},function(command,cli){
+        if(command.parameters.length==1 && command.text.substr(command.text.length-1)!=' ')cli.commandline+=' ';
+        console.log(command);
     });
 
     the_cli.extend('command_with_error',function(){
@@ -120,4 +119,13 @@
     the_cli.extend('centered',function(data,cli){
         cli.write(' '.repeat((cli.calculateDim()-data.parametersText.length)/2)+data.parametersText);
     });
+
+    the_cli.addProcessor('reset',function(command,cli){
+        if(command.command == 'reset'){
+            document.location.reload();
+            return true;
+        }
+    });
+
+
 })(TheCLI);
