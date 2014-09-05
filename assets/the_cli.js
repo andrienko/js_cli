@@ -60,6 +60,7 @@ TheCLI = {
 
     parent: null,
 
+    lastWrittenText: '',
     output: null,
     input: null,
 
@@ -188,7 +189,7 @@ TheCLI = {
         var commons = this.getSuggestion(command,this.commands);
 
         if(typeof commons == 'object'){
-            this.write(commons.join(' '));
+            this.write(commons.join(' '),false,true);
             commons = getMostCommonSymbols(commons);
         }
 
@@ -196,7 +197,16 @@ TheCLI = {
 
     },
 
-    write: function(text, noBreak) {
+
+    /**
+     * Writes line to the console
+     * @param {String} text The text to write
+     * @param {Boolean} [noBreak] Whether the new line should be created
+     * @param {Boolean} [noRepeat] Whether
+     */
+    write: function(text, noBreak,noRepeat) {
+        if(noRepeat == true && this.lastWrittenText == text)return;
+        this.lastWrittenText = text;
         if(!noBreak)text += '\n';
         var theLine = document.createElement('span');
         theLine.innerHTML = text;
@@ -382,11 +392,11 @@ TheCLI = {
 
     /**
      * Create a command-line parameter, setting callback function as a handler
-     * @param name The command to be used
-     * @param callback Handler function
-     * @param suggest Function to suggest (if defined - runs on tab press and, if array returned, shows user the
-     * list of variants + adds common symbols to user input and, if single value is returned, user input is replaced
-     * with it)
+     * @param {String} name The command to be used
+     * @param {Function} callback Handler function
+     * @param {Function} [suggest] Function to suggest (if defined - runs on tab press and, if array returned, shows
+     * user the list of variants + adds common symbols to user input and, if single value is returned, user input is
+     * replaced with it)
      */
     extend: function(name, callback, suggest) {
         name = name.toLower(this.caseSensitiveCommands);
