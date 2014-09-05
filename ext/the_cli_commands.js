@@ -116,4 +116,13 @@
     the_cli.extend('centered',function(data,cli){
         cli.write(' '.repeat((cli.calculateDim()-data.parametersText.length)/2)+data.parametersText);
     });
+
+    the_cli.addProcessor('reset',function(command,cli){
+        if(command.command == 'reset'){
+            document.location.reload();
+            return true;
+        }
+    });
+
+
 })(TheCLI);

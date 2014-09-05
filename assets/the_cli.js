@@ -75,7 +75,8 @@ TheCLI = {
 
     strings:{
         notfound:'{0}:command not found',
-        anerror:'{0}: an error uccured\n\n{1}'
+        anerror:'{0}: an error occurred\n{1}',
+        errorproc:'Processor "{0}": an error occurred: \n{1}'
     },
 
     zerojs:null,
@@ -245,7 +246,19 @@ TheCLI = {
             }
         }
         else {
-            this.write(this.strings.notfound.format(commandline.command.stripTags(this.tagsAllowed)));
+            for(var name in this.processors){
+                if(name!='default' && typeof this.processors[name] == 'function'){
+                    var result = false;
+                    try{
+                        result = this.processors[name](commandline,this);
+                    }
+                    catch (e){
+                        this.write(this.strings.errorproc.format(name.stripTags(this.tagsAllowed),e.message)).nl();
+                    }
+                    if(result)return;
+                }
+            }
+            if(typeof this.processors.default == 'function')this.processors.default(commandline,this);
         }
     },
 
@@ -275,7 +288,17 @@ TheCLI = {
     },
 
     hints: {},
+    processors: {
+        'default':function(commandLine,cli){
+            cli.write(cli.strings.notfound.format(commandLine.command.stripTags(this.tagsAllowed)));
+        }
+    },
 
+    /**
+     * Parses command line input. Returns an object containing input parts and the main command.
+     * @param {String} text
+     * @return {Object}
+     */
     parseCommand: function(text) {
 
         var parameters = text.split(/\s+|\s*=\s*/);
@@ -352,6 +375,8 @@ TheCLI = {
             return false;
         }
 
+        parent.innerHTML='';
+
         var output = parent.getElementsByClassName('output');
         if(output.length < 1) {
             output = document.createElement('div')
@@ -414,5 +439,15 @@ TheCLI = {
         name = name.toLower(this.caseSensitiveCommands);
         this.commands[name] = callback;
         if(typeof suggest == 'function')this.hints[name] = suggest;
+    },
+
+    /**
+     * Add a callback to process unknown (unrecognized) input. All callbacks will be tried until one of them returns
+     * true, except one called 'default', which, if defined, will be called last.
+     * @param {String} id And id of processor. The callback will be stored in TheCLI.processors[id].
+     * @param {Function} callback The function to process input. If it returns false - the next processor will be called
+     */
+    addProcessor: function(id,callback){
+        this.processors[id] = callback;
     }
 };
