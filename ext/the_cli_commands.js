@@ -103,7 +103,10 @@
 
     });
 
-    the_cli.extend('command_to_test_suggestions',function(){});
+    the_cli.extend('command_to_test_suggestions',function(){},function(command,cli){
+        if(command.parameters.length==1 && command.text.substr(command.text.length-1)!=' ')cli.commandline+=' ';
+        console.log(command);
+    });
 
     the_cli.extend('command_with_error',function(){
         the_undefined_function();
